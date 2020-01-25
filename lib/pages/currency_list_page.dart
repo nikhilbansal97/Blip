@@ -1,3 +1,4 @@
+import 'package:blip/models/currency.dart';
 import 'package:blip/network/api_service.dart';
 import 'package:flutter/material.dart';
 
@@ -13,20 +14,68 @@ class CurrencyListPage extends StatefulWidget {
 }
 
 class _CurrencyListPageState extends State<CurrencyListPage> {
+  List<Currency> _currencyList = [];
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLatestCurrencyInformation();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: MaterialButton(
-          child: Text("Fetch data from API!"),
-          onPressed: () {
-            ApiService.fetchLatestExchangeRates();
-          },
-          color: Colors.deepOrange,
-        ),
+      body: Stack(
+        children: <Widget>[
+          _buildCurrencyList(_currencyList),
+          _buildLoadingIndicator(isLoading)
+        ],
+      ),
+    );
+  }
+
+  void _fetchLatestCurrencyInformation() {
+    setState(() {
+      isLoading = true;
+    });
+    Future<List<Currency>> future = ApiService.fetchLatestTickerData();
+    future.asStream().listen((value) {
+      _updateCurrencyList(value);
+    });
+  }
+
+  void _updateCurrencyList(List<Currency> value) {
+    setState(() {
+      isLoading = false;
+      _currencyList = value;
+    });
+  }
+
+  ListView _buildCurrencyList(List<Currency> currencyList) {
+    return ListView.builder(
+      itemCount: currencyList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(
+            currencyList[index].name,
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLoadingIndicator(bool isVisible) {
+    return Center(
+      child: Visibility(
+        visible: isVisible,
+        child: CircularProgressIndicator(),
       ),
     );
   }
