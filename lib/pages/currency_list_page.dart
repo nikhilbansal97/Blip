@@ -59,14 +59,7 @@ class _CurrencyListPageState extends State<CurrencyListPage> {
     return ListView.builder(
       itemCount: currencyList.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(
-            currencyList[index].name,
-            style: TextStyle(
-              color: Colors.black,
-            ),
-          ),
-        );
+        return _buildCurrencyListItem(currencyList[index]);
       },
     );
   }
@@ -77,6 +70,26 @@ class _CurrencyListPageState extends State<CurrencyListPage> {
         visible: isVisible,
         child: CircularProgressIndicator(),
       ),
+    );
+  }
+
+  Widget _buildCurrencyListItem(Currency currency) {
+    return Padding(
+      padding: EdgeInsets.all(18.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          _buildBlackTextView(currency.name),
+          _buildBlackTextView(currency.price),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBlackTextView(String text) {
+    return Text(
+      text,
+      style: TextStyle(color: Colors.black, fontSize: 16.0),
     );
   }
 }
