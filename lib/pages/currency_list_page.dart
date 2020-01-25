@@ -1,3 +1,4 @@
+import 'package:blip/network/api_service.dart';
 import 'package:flutter/material.dart';
 
 class CurrencyListPage extends StatefulWidget {
@@ -19,7 +20,13 @@ class _CurrencyListPageState extends State<CurrencyListPage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Text("Hi from Currency List page!"),
+        child: MaterialButton(
+          child: Text("Fetch data from API!"),
+          onPressed: () {
+            ApiService.fetchLatestExchangeRates();
+          },
+          color: Colors.deepOrange,
+        ),
       ),
     );
   }
