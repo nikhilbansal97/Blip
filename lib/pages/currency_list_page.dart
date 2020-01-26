@@ -1,11 +1,12 @@
-import 'package:blip/models/currency.dart';
-import 'package:blip/network/api_service.dart';
+import 'package:blip/database/currency_repository.dart';
+import 'package:blip/database/models/currency.dart';
 import 'package:flutter/material.dart';
 
 class CurrencyListPage extends StatefulWidget {
   CurrencyListPage({Key key, this.title}) : super(key: key);
 
   final String title;
+  final CurrencyRepository repository = CurrencyRepository();
 
   @override
   State<StatefulWidget> createState() {
@@ -20,7 +21,12 @@ class _CurrencyListPageState extends State<CurrencyListPage> {
   @override
   void initState() {
     super.initState();
-    _fetchLatestCurrencyInformation();
+    _init();
+  }
+
+  void _init() async {
+    await widget.repository.init();
+    await _fetchLatestCurrencyInformation();
   }
 
   @override
@@ -38,11 +44,11 @@ class _CurrencyListPageState extends State<CurrencyListPage> {
     );
   }
 
-  void _fetchLatestCurrencyInformation() {
+  Future<void> _fetchLatestCurrencyInformation() {
     setState(() {
       isLoading = true;
     });
-    Future<List<Currency>> future = ApiService.fetchLatestTickerData();
+    Future<List<Currency>> future = widget.repository.getCurrencyInformation();
     future.asStream().listen((value) {
       _updateCurrencyList(value);
     });
